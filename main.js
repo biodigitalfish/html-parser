@@ -2,65 +2,52 @@
 const fs = require("fs");
 
 const TAG_MATCH = /<\/?[A-Z]>/g;
+const SLASH_MATCH = /\//g;
+const OPEN_MATCH_PART = /</g;
+const OPEN_MATCH_FULL = /<?[A-Z]>/g;
+
+const _opposingTag = (tag) => {
+  // input tag, return the oposing tag, either opening or closing
+  if (tag.includes("/")) {
+    return tag.replace(SLASH_MATCH, "");
+  }
+  return tag.replace(OPEN_MATCH_PART, "</");
+};
+
+const _checkOpposingTag = (tag, array) => {
+  return array.includes(_opposingTag(tag));
+};
 
 const _checkTags = (tags) => {
-  // impl goes here
-  // check if input type is Array
+  if (tags.length === 0) {
+    return true;
+  }
 
-  // array should first be even number, an unven number means there is a missing opening or closing tag somewhere
+  // console.log("Tags:", tags);
+  const item = tags.shift();
+  const hasOpposing = _checkOpposingTag(item, tags);
+  let opposingIndex = undefined;
+  if (hasOpposing) {
+    opposingIndex = tags.indexOf(_opposingTag(item));
+  }
 
-  if (!Array.isArray(tags) || !tags.length > 1) {
-    console.log("No Tags found");
+  if (opposingIndex >= 0) {
+    // console.log("Removed:", tags[opposingIndex]);
+    tags.splice(opposingIndex, 1);
+    if (_checkTags(tags)) {
+      console.log("PerFECTO");
+    }
+  } else {
+    if (item.match(SLASH_MATCH)) {
+      // if item is an end tag
+      console.log(`Expected # found ${item}`);
+    }
+    if (item.match(OPEN_MATCH_PART)) {
+      // item is an opening tag
+      console.log(`Expected ${_opposingTag(item)} found #`);
+    }
     return false;
   }
-  console.log("Tags:", tags);
-
-  // query and return faults from inner children first
-  const arrayHalf = Math.ceil(tags.length / 2) - 1;
-  // console.log("halfArray:", arrayHalf);
-  let iStart = arrayHalf; // array is 0 index, minus 1 from array middle for start point
-  let iEnd = arrayHalf + 1;
-  let lastMatch = undefined;
-  let bool_correct = true;
-  do {
-    const firstItem = tags[iStart];
-    const lastItem = tags[iEnd];
-    console.log("first:", firstItem, "last:", lastItem);
-    const closingTag = firstItem.slice(0, 1) + "/" + firstItem.slice(1);
-    console.log(
-      "Closing Tag:",
-      typeof closingTag,
-      closingTag,
-      "vs",
-      typeof lastItem,
-      lastItem,
-      closingTag === lastItem
-    );
-    lastMatch = closingTag;
-
-    if (closingTag !== lastItem) {
-      bool_correct = false;
-      console.log(`Expected ${closingTag} found ${lastItem}`);
-      break;
-    }
-    iStart -= 1;
-    iEnd += 1;
-    // console.log("iStart:", iStart, "vs Length:", tags.length);
-    if (!tags[iStart] || !tags[iEnd]) {
-      if (!tags[iStart]) {
-        console.log(`Expected # found ${tags[iEnd]}`);
-      } else {
-        console.log("Expected..", tags[iStart], tags[iEnd]);
-        // console.log(`Expected ${lastMatch} found #`);
-      }
-      break;
-    }
-  } while (iStart > 0 && iEnd < tags.length);
-  if (bool_correct) {
-    console.log("Correctly tagged paragraph");
-  }
-  // console.log(firstItem.slice(0, 1) + "/" + firstItem.slice(1) === lastItem);
-  // console.log("Tags:", typeof tags, tags, tags === null);
 };
 
 const checkTags = function (paragraph) {
@@ -78,8 +65,12 @@ const checkTags = function (paragraph) {
 // ];
 
 const statementList = [
-  String.raw`<B><C>This should be centred and in boldface, but there is a missing closing tag</C>`,
+  String.raw`The following text<C><B>is centred and in boldface</B></C>`,
 ];
+
+// const statementList = [
+//   String.raw`<B><E>This should be in boldface, but there is an extra closing tag</E></B></C>`,
+// ];
 
 // const myString = String.raw`<B>This <g>is <B>boldface</B> in <<*> a</B> <\6> <<d>sentence`;
 // console.log(myString);
