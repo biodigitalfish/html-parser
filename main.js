@@ -10,29 +10,33 @@ const _opposingTag = (tag) => {
 };
 
 const _checkTags = (tags) => {
-  // console.log("Tags:", tags);
+  console.log("Tags:", tags);
   const item = tags[0];
   const lastItem = tags[tags.length - 1];
   const innerTags = tags.slice(1, tags.length - 1);
 
-  // console.log("InnerTags:", innerTags);
-
-  //// BASE CASE - Once lowest level inner array is reached
+  console.log("Inner:", innerTags);
+  //// If only one child. Check it against parent values
   if (innerTags.length === 1) {
+    // One inner child.
     if (lastItem !== _opposingTag(item)) {
       if (innerTags[0] === _opposingTag(item)) {
+        // check inner tag === parent left item
         console.log(`Expected # found ${lastItem}`);
       } else if (innerTags[0] === _opposingTag(lastItem)) {
-        // if the inner tag matches the last item, then the first item is missing its closing value
+        // check inner against parent right item
         console.log(`Expected ${_opposingTag(item)} found #`);
+      } else {
+        // InnerChild has no match
+        console.log(`Expected # found ${innerTags[0]}`);
       }
     } else {
       console.log(`Expected # found ${innerTags[0]}`);
-      // console.log("0 Catch", item, lastItem, innerTags);
     }
     return false;
   }
 
+  // Carry out recursive call before checking current values.
   if (innerTags.length > 1) {
     const checkInner = _checkTags(innerTags);
     if (checkInner) {
@@ -42,11 +46,13 @@ const _checkTags = (tags) => {
     }
   }
 
+  // If recursive calls have come back good, then check current values
   if (_opposingTag(item) !== lastItem) {
     // console.log("Item:", item, "LastItem:", lastItem);
     console.log(`Expected ${_opposingTag(item)} found ${lastItem}`);
     return false;
   } else if (innerTags.length === 0) {
+    // finally, if current values are true and there are no further values to check return true
     return true;
   }
 };
@@ -66,9 +72,9 @@ let statementList = [
   String.raw`<B><C>This should be centred and in boldface, but there is a missing closing tag</C>`,
 ];
 
-// statementList = [
-//   String.raw`<B><C>This should be centred and in boldface, but there is a missing closing tag</C>`,
-// ];
+statementList = [
+  String.raw`<B><C> This should be centred and in boldface, but the tags are wrongly nested <B></B></C>`,
+];
 
 statementList.map((statement) => {
   if (checkTags(statement)) {
