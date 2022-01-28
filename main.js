@@ -1,19 +1,12 @@
-//https://regexr.com/
-const fs = require("fs");
-
 const TAG_MATCH = /<\/?[A-Z]>/g;
-const SLASH_MATCH = /\//g;
-const OPEN_MATCH_PART = /</g;
-const OPEN_MATCH_FULL = /<[A-Z]>/g;
-const CLOSE_MATCH_FULL = /<\/[A-Z]>/g;
 
 const _opposingTag = (tag) => {
   // input tag, return the oposing tag, either opening or closing
   // console.log("input tag:", tag, typeof tag);
   if (tag.includes("/")) {
-    return tag.replace(SLASH_MATCH, "");
+    return tag.replace(/\//g, "");
   }
-  return tag.replace(OPEN_MATCH_PART, "</");
+  return tag.replace(/</g, "</");
 };
 
 const _checkTags = (tags) => {
@@ -23,6 +16,8 @@ const _checkTags = (tags) => {
   const innerTags = tags.slice(1, tags.length - 1);
 
   // console.log("InnerTags:", innerTags);
+
+  //// BASE CASE - Once lowest level inner array is reached
   if (innerTags.length === 1) {
     if (lastItem !== _opposingTag(item)) {
       if (innerTags[0] === _opposingTag(item)) {
@@ -31,51 +26,29 @@ const _checkTags = (tags) => {
         // if the inner tag matches the last item, then the first item is missing its closing value
         console.log(`Expected ${_opposingTag(item)} found #`);
       }
+    } else {
+      console.log(`Expected # found ${innerTags[0]}`);
+      // console.log("0 Catch", item, lastItem, innerTags);
     }
     return false;
   }
 
   if (innerTags.length > 1) {
-    if (!_checkTags(innerTags)) {
-      // console.log("nested check false");
-
+    const checkInner = _checkTags(innerTags);
+    if (checkInner) {
+      return true;
+    } else {
       return false;
     }
   }
 
-  if (
-    lastItem.match(CLOSE_MATCH_FULL) === null ||
-    item.match(OPEN_MATCH_FULL) === null
-  ) {
-    console.log("last or first item not correct");
-    if (lastItem.match(CLOSE_MATCH_FULL) === null) {
-      console.log(
-        lastItem.match(CLOSE_MATCH_FULL) === null &&
-          `last item ${lastItem} not a closing tag`
-      );
-    }
-    if (item.match(OPEN_MATCH_FULL) === null) {
-      console.log(
-        item.match(OPEN_MATCH_FULL) === null &&
-          `first item ${item} not an open tag`
-      );
-    }
-    return false;
-  }
-
   if (_opposingTag(item) !== lastItem) {
     // console.log("Item:", item, "LastItem:", lastItem);
-
     console.log(`Expected ${_opposingTag(item)} found ${lastItem}`);
     return false;
-  }
-  if (innerTags.length === 0) {
+  } else if (innerTags.length === 0) {
     return true;
   }
-
-  // console.log("Check:", lastItem, _opposingTag(item));
-  // console.log("Sliced Array:", innerTags);
-  return true;
 };
 
 const checkTags = function (paragraph) {
@@ -94,18 +67,8 @@ let statementList = [
 ];
 
 // statementList = [
-//   String.raw`<B><C> This should be centred and in boldface, but the tags are wrongly nested </B></C>`,
+//   String.raw`<B><C>This should be centred and in boldface, but there is a missing closing tag</C>`,
 // ];
-
-// const myString = String.raw`<B>This <g>is <B>boldface</B> in <<*> a</B> <\6> <<d>sentence`;
-// console.log(myString);
-// fs.writeFile("/Users/John/Desktop/test.txt", myString, function (err) {
-//   if (err) {
-//     return console.log(err);
-//   }
-
-//   console.log("The file was saved!");
-// });
 
 statementList.map((statement) => {
   if (checkTags(statement)) {
