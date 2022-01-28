@@ -1,4 +1,5 @@
 const TAG_MATCH = /<\/?[A-Z]>/g;
+let openTags = [];
 
 const _opposingTag = (tag) => {
   // input tag, return the oposing tag, either opening or closing
@@ -31,9 +32,9 @@ const _checkTags = (tags) => {
         console.log(`Expected # found ${innerTags[0]}`);
       }
     } else {
-      console.log(`Expected # found ${innerTags[0]}`);
+      console.log("Current don't match so check if one matches the child");
+      // console.log(`Expected # found ${innerTags[0]}`);
     }
-    return false;
   }
 
   // Carry out recursive call before checking current values.
@@ -41,8 +42,6 @@ const _checkTags = (tags) => {
     const checkInner = _checkTags(innerTags);
     if (checkInner) {
       return true;
-    } else {
-      return false;
     }
   }
 
@@ -73,7 +72,7 @@ let statementList = [
 ];
 
 statementList = [
-  String.raw`<B><C> This should be centred and in boldface, but the tags are wrongly nested <B></B></C>`,
+  String.raw`<B><C> Outer Tag is missing but its failing on internal tag <B></B></C>`,
 ];
 
 statementList.map((statement) => {
