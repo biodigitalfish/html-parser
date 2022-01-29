@@ -1,5 +1,6 @@
 const TAG_MATCH = /<\/?[A-Z]>/g;
-let openTags = [];
+const OPEN_MATCH = /<[A-Z]>/g;
+const CLOSE_MATCH = /<\/[A-Z]>/g;
 
 const _opposingTag = (tag) => {
   // input tag, return the oposing tag, either opening or closing
@@ -16,50 +17,67 @@ const _checkTags = (tags) => {
   const lastItem = tags[tags.length - 1];
   const innerTags = tags.slice(1, tags.length - 1);
 
-  console.log("Inner:", innerTags);
-  //// If only one child. Check it against parent values
-  if (innerTags.length === 1) {
-    // One inner child.
-    if (lastItem !== _opposingTag(item)) {
-      if (innerTags[0] === _opposingTag(item)) {
-        // check inner tag === parent left item
-        console.log(`Expected # found ${lastItem}`);
-      } else if (innerTags[0] === _opposingTag(lastItem)) {
-        // check inner against parent right item
-        console.log(`Expected ${_opposingTag(item)} found #`);
-      } else {
-        // InnerChild has no match
-        console.log(`Expected # found ${innerTags[0]}`);
-      }
-    } else {
-      console.log("Current don't match so check if one matches the child");
-      // console.log(`Expected # found ${innerTags[0]}`);
-    }
-  }
-
-  // Carry out recursive call before checking current values.
-  if (innerTags.length > 1) {
-    const checkInner = _checkTags(innerTags);
-    if (checkInner) {
+  if (innerTags.length === 0) {
+    // less than
+    console.log("No children");
+    if (lastItem === _opposingTag(item)) {
       return true;
     }
   }
 
-  // If recursive calls have come back good, then check current values
-  if (_opposingTag(item) !== lastItem) {
-    // console.log("Item:", item, "LastItem:", lastItem);
-    console.log(`Expected ${_opposingTag(item)} found ${lastItem}`);
-    return false;
-  } else if (innerTags.length === 0) {
-    // finally, if current values are true and there are no further values to check return true
-    return true;
+  // console.log("For SOLVED - push index back up?");
+
+  if (innerTags.length === 1) {
+    console.log("unresolved child item.", innerTags[0]);
+    if (innerTags[0].match(OPEN_MATCH)) {
+      // check lastitem
+      if (innerTags[0] === _opposingTag(lastItem)) {
+        console.log(
+          `Child ${innerTags[0]} resolves with last item`,
+          lastItem,
+          "returning:",
+          item
+        );
+        return [1, 2];
+      }
+    } else if (item === _opposingTag(innerTags[0])) {
+      // is a closing tag so check first item
+      console.log("Child Item matches first item");
+      return [0, 1];
+    } else if (lastItem.match(CLOSE_MATCH) && lastItem === _opposingTag(item)) {
+      // check item and last item resolve
+      console.log("Items match");
+      return [0, 2];
+    } else {
+      console.log("No matches, returning Tags:", tags);
+      return [0, 1, 2]; // none resolve so throw them all back up
+    }
+  } else {
+    const checkTagResult = _checkTags(innerTags);
+    // console.log("solved:", checkTagResult, tags);
+
+    const unresolved = tags.slice(1, tags.length - 1).filter((f, index) => {
+      return !checkTagResult.includes(index);
+    });
+    unresolved.splice(0, 0, tags[0]);
+    unresolved.splice(unresolved.length + 1, 0, tags[tags.length - 1]);
+    console.log("unresolved:", unresolved, "tags:", tags);
+    if (unresolved) {
+      console.log("RECURSIVE WITH:", unresolved);
+      return _checkTags(unresolved);
+    } else {
+      console.log("SOLVED");
+    }
   }
+  // console.log("Inner:", innerTags);
+  return false;
 };
 
 const checkTags = function (paragraph) {
   // console.log(" ");
   // console.log("input Paragraph =", paragraph);
   const matchedTags = paragraph.match(TAG_MATCH);
+
   return _checkTags(matchedTags);
 };
 
@@ -76,7 +94,11 @@ statementList = [
 ];
 
 statementList.map((statement) => {
+  console.log("");
   if (checkTags(statement)) {
-    console.log("Correctly tagged paragraph");
+    // console.log("Correctly tagged paragraph");
   }
 });
+
+// myTags = ["<B>", "<C>", "<B>", "</B>", "</C>"];
+// sorted = [];
