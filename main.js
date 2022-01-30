@@ -11,94 +11,78 @@ const _opposingTag = (tag) => {
   return tag.replace(/</g, "</");
 };
 
-const _checkTags = (tags) => {
-  console.log("Tags:", tags);
-  const item = tags[0];
-  const lastItem = tags[tags.length - 1];
-  const innerTags = tags.slice(1, tags.length - 1);
-
-  if (innerTags.length === 0) {
-    // less than
-    console.log("No children");
-    if (lastItem === _opposingTag(item)) {
-      return true;
-    }
-  }
-
-  // console.log("For SOLVED - push index back up?");
-
-  if (innerTags.length === 1) {
-    console.log("unresolved child item.", innerTags[0]);
-    if (innerTags[0].match(OPEN_MATCH)) {
-      // check lastitem
-      if (innerTags[0] === _opposingTag(lastItem)) {
-        console.log(
-          `Child ${innerTags[0]} resolves with last item`,
-          lastItem,
-          "returning:",
-          item
-        );
-        return [1, 2];
-      }
-    } else if (item === _opposingTag(innerTags[0])) {
-      // is a closing tag so check first item
-      console.log("Child Item matches first item");
-      return [0, 1];
-    } else if (lastItem.match(CLOSE_MATCH) && lastItem === _opposingTag(item)) {
-      // check item and last item resolve
-      console.log("Items match");
-      return [0, 2];
-    } else {
-      console.log("No matches, returning Tags:", tags);
-      return [0, 1, 2]; // none resolve so throw them all back up
-    }
+const _describeIssue = (item, lastItem = "#") => {
+  if (item.match(OPEN_MATCH)) {
+    console.log(`0 Expected ${_opposingTag(item)} found ${lastItem}`);
   } else {
-    const checkTagResult = _checkTags(innerTags);
-    // console.log("solved:", checkTagResult, tags);
-
-    const unresolved = tags.slice(1, tags.length - 1).filter((f, index) => {
-      return !checkTagResult.includes(index);
-    });
-    unresolved.splice(0, 0, tags[0]);
-    unresolved.splice(unresolved.length + 1, 0, tags[tags.length - 1]);
-    console.log("unresolved:", unresolved, "tags:", tags);
-    if (unresolved) {
-      console.log("RECURSIVE WITH:", unresolved);
-      return _checkTags(unresolved);
-    } else {
-      console.log("SOLVED");
-    }
+    console.log(`1 Expected # found ${item}`);
   }
-  // console.log("Inner:", innerTags);
-  return false;
+};
+
+const _checkTags = (tags) => {
+  // console.log("Tags:", tags);
+  if (!tags || tags.length === 0) {
+    console.log("nothing to check");
+    return;
+  }
+
+  if (tags.length === 1) {
+    _describeIssue(tags[0]);
+    return tags;
+  }
+
+  let currentIndex = 0;
+  const unsolved = [];
+
+  while (currentIndex < tags.length) {
+    const item = tags[currentIndex];
+    const nextItem = tags[currentIndex + 1];
+    const opposing = _opposingTag(item);
+
+    // console.log(`item ${item} vs next: ${nextItem}`);
+    if (item.match(OPEN_MATCH) && nextItem) {
+      if (opposing === nextItem) {
+        // console.log("Match", item, nextItem);
+        currentIndex += 2;
+        continue;
+      } else if (nextItem.match(CLOSE_MATCH)) {
+        console.log(`Expected ${opposing} found ${nextItem}`);
+        return false;
+      }
+      unsolved.push(item);
+    } else if (item.match(CLOSE_MATCH)) {
+      if (unsolved.includes(_opposingTag(item))) {
+        uIndex = unsolved.indexOf(_opposingTag(item));
+        if (uIndex !== -1) {
+          unsolved.splice(uIndex, 1);
+        }
+        // console.log("IndexOf:", unsolved.indexOf(_opposingTag(item)));
+      } else {
+        unsolved.push(item);
+      }
+      // console.log("closing tag:", item, item.match(CLOSE_MATCH));
+    } else {
+      unsolved.push(item);
+    }
+    currentIndex += 1;
+  }
+  if (unsolved.length > 0) {
+    // console.log(unsolved[0]);
+    _describeIssue(unsolved[0]);
+    return false;
+  }
+  console.log("Correctly tagged paragraph");
+  return true;
 };
 
 const checkTags = function (paragraph) {
-  // console.log(" ");
-  // console.log("input Paragraph =", paragraph);
+  // console.log(paragraph);
   const matchedTags = paragraph.match(TAG_MATCH);
-
   return _checkTags(matchedTags);
 };
 
-let statementList = [
-  String.raw`The following text<C><B>is centred and in boldface</B></C>`,
-  String.raw`<B>This <g>is <B>boldface</B> in <<*> a</B> <\6> <<d>sentence`,
-  String.raw`<B><C> This should be centred and in boldface, but the tags are wrongly nested </B></C>`,
-  String.raw`<B>This should be in boldface, but there is an extra closing tag</B></C>`,
-  String.raw`<B><C>This should be centred and in boldface, but there is a missing closing tag</C>`,
-];
-
-statementList = [
-  String.raw`<B><C> Outer Tag is missing but its failing on internal tag <B></B></C>`,
-];
+let statementList = [String.raw`The following text<C><B>is centred and in boldface</B></C>`, String.raw`<B>This <g>is <B>boldface</B> in <<*> a</B> <\6> <<d>sentence`, String.raw`<B><C> This should be centred and in boldface, but the tags are wrongly nested </B></C>`, String.raw`<B>This should be in boldface, but there is an extra closing tag</B></C>`, String.raw`<B><C>This should be centred and in boldface, but there is a missing closing tag</C>`];
 
 statementList.map((statement) => {
-  console.log("");
-  if (checkTags(statement)) {
-    // console.log("Correctly tagged paragraph");
-  }
+  checkTags(statement);
 });
-
-// myTags = ["<B>", "<C>", "<B>", "</B>", "</C>"];
-// sorted = [];
