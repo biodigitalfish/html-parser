@@ -1,9 +1,7 @@
-//https://regexr.com/
+# Tag Checker Problem
 
-1. Take input for paragraph as raw string so we are escaping any special characters
+Written in JavaScript, this program takes an input of a paragraph of text and validates if the HTML tags present are correct.
 
-\_checkTags Function
+## Installation
 
-1. Recursive call - returning errors from inner array first before outer checks are done.
-
-2. If we are doing recursive call - check if there is less than 2 values. If there are less - then compare child to parent start && end.
+<p><a href="https://static.semrush.com/blog/uploads/media/cf/8b/cf8b4fc60cd8cce5213c3883cb36a420/html-tags-list.svg"></a></p>
