@@ -8,7 +8,7 @@ Written in JavaScript, this program takes an input of a paragraph of text and va
 
 - [VSCode](https://code.visualstudio.com/). Or whatever favourite IDE or runtime you prefer.
 
-- [NodeJs](<[Node.js](https://nodejs.org/)>)
+- [NodeJs](https://nodejs.org/)
 
 - [Jest](https://jestjs.io/) => `npm i --save-dev jest`
 
