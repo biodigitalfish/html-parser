@@ -14,7 +14,7 @@ Written in JavaScript, this program takes an input of a paragraph of text and va
 
 ## Testing using Jest
 
-main.test.js takes the input test values from tests.js
+checkTags.test.js takes the input test values from tests.js
 
 It verifies 3 functions within checkTags.js file:
 
