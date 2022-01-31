@@ -32,8 +32,7 @@ const _checkTags = (tags) => {
     return "Correctly tagged paragraph";
   }
   if (tags.length === 1) {
-    const dError = _describeIssue(tags[0]);
-    return dError;
+    return _describeIssue(tags[0]);
   }
 
   const unsolved = [];
@@ -59,7 +58,7 @@ const _checkTags = (tags) => {
     } else if (item.match(CLOSE_MATCH)) {
       // if it's a close tag see if can resolve a previous open tag
       if (unsolved.includes(_opposingTag(item))) {
-        uIndex = unsolved.indexOf(_opposingTag(item));
+        const uIndex = unsolved.indexOf(_opposingTag(item));
         if (uIndex !== -1) {
           unsolved.splice(uIndex, 1); // remove solved tag
         }
