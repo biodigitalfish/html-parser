@@ -1,0 +1,23 @@
+{
+  "name": "test-exercise",
+  "version": "1.0.0",
+  "description": "<img src=\"https://static.semrush.com/blog/uploads/media/cf/8b/cf8b4fc60cd8cce5213c3883cb36a420/html-tags-list.svg\" title=\"\" alt=\"alt text\" data-align=\"center\">",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/biodigitalfish/test-exercise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/biodigitalfish/test-exercise/issues"
+  },
+  "homepage": "https://github.com/biodigitalfish/test-exercise#readme",
+  "devDependencies": {
+    "jest": "^27.4.7"
+  }
+}

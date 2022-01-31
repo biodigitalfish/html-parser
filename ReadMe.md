@@ -2,8 +2,11 @@
 
 # Tag Checker Problem
 
-Written in JavaScript, this program takes an input of a paragraph of text and validates if the HTML tags present are correct.
+Written in JavaScript, this program takes an input of a paragraph of text and validates if the psuedo HTML tag syntax is correct
 
-## Installation
+## Dependencies
 
-Requires NodeJs to run.
+* VSCode
+* NodeJs
+* Jest
+
