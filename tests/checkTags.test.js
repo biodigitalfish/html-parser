@@ -1,4 +1,4 @@
-const main = require("./checkTags.js");
+const main = require("../modules/checkTags.js");
 const tests = require("./tests");
 
 const { expect, test, toBe } = require("@jest/globals");

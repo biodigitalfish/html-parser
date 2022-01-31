@@ -1,4 +1,4 @@
-const main = require("./checkTags.js");
+const main = require("./modules/checkTags.js");
 
 const readline = require("readline");
 const rl = readline.createInterface({

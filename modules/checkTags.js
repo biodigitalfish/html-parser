@@ -1,5 +1,3 @@
-const { find } = require("lodash");
-
 const TAG_MATCH = /<\/?[A-Z]>/g;
 const OPEN_MATCH = /<[A-Z]>/g;
 const CLOSE_MATCH = /<\/[A-Z]>/g;
