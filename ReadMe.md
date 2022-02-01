@@ -6,11 +6,13 @@ Written in JavaScript, this program takes an input of a paragraph of text and va
 
 ## Dependencies
 
-- [VSCode](https://code.visualstudio.com/). Or whatever favourite IDE or runtime you prefer.
-
 - [NodeJs](https://nodejs.org/)
 
 - [Jest](https://jestjs.io/) => `npm i --save-dev jest`
+
+## Development
+
+- [VSCode](https://code.visualstudio.com/). Or whatever your favourite IDE is.
 
 ## Testing using Jest
 
