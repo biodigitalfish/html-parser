@@ -14,9 +14,10 @@ const _opposingTag = (tag) => {
 };
 
 const _describeIssue = (item, lastitem = "#") => {
+  const opposingTag = _opposingTag(item);
   if (item.match(OPEN_MATCH)) {
-    console.log(`Expected ${_opposingTag(item)} found ${lastitem}`);
-    return `Expected ${_opposingTag(item)} found ${lastitem}`;
+    console.log(`Expected ${opposingTag} found ${lastitem}`);
+    return `Expected ${opposingTag} found ${lastitem}`;
   } else if (item.match(CLOSE_MATCH)) {
     console.log(`Expected ${lastitem} found ${item}`);
     return `Expected ${lastitem} found ${item}`;
@@ -40,25 +41,24 @@ const _checkTags = (tags) => {
   while (currentIndex < tags.length) {
     const item = tags[currentIndex];
     const nextItem = tags[currentIndex + 1];
-    const opposing = _opposingTag(item);
+    const opposingTag = _opposingTag(item);
 
     if (item.match(OPEN_MATCH) && nextItem) {
       // if item is an open tag and there is tag to the right available
-      if (opposing === nextItem) {
+      if (opposingTag === nextItem) {
         // match made. skip 2 on next iteration
         currentIndex += 2;
         continue;
       } else if (nextItem.match(CLOSE_MATCH)) {
         // bad match. exit
-        console.log(`Expected ${opposing} found ${nextItem}`);
-        return `Expected ${opposing} found ${nextItem}`;
+        return _describeIssue(item, nextItem);
       }
       // push unsolved item into list
       unsolved.push(item);
     } else if (item.match(CLOSE_MATCH)) {
       // if it's a close tag see if can resolve a previous open tag
-      if (unsolved.includes(_opposingTag(item))) {
-        const uIndex = unsolved.indexOf(_opposingTag(item));
+      if (unsolved.includes(opposingTag)) {
+        const uIndex = unsolved.indexOf(opposingTag);
         if (uIndex !== -1) {
           unsolved.splice(uIndex, 1); // remove solved tag
         }
